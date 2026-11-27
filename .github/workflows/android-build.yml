@@ -23,13 +23,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ZIP_FILE=""
-          if [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_token_glass_fixed.zip" ]; then
-            ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_token_glass_fixed.zip"
-          elif [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_fixed.zip" ]; then
-            ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_fixed.zip"
-          else
-            echo "::error::找不到源码 ZIP。请将新版源码 ZIP 上传到仓库根目录，并保留文件名。"
+          ZIP_FILE="DEEPSEEK_UNPACKER_FKUD_tokenfix_glassblur_source.zip"
+          if [ ! -f "$ZIP_FILE" ]; then
+            echo "::error::找不到 $ZIP_FILE。请将该源码 ZIP 上传到仓库根目录，文件名保持不变。"
             ls -la
             exit 1
           fi
