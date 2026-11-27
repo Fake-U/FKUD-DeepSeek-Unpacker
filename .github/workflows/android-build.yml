@@ -1,0 +1,71 @@
+name: Android Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Extract source ZIP and build APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Android source ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP_FILE=""
+          if [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_with_icon_and_bars.zip" ]; then
+            ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_with_icon_and_bars.zip"
+          elif [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_fixed.zip" ]; then
+            ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_fixed.zip"
+          else
+            echo "::error::找不到源码 ZIP。请将新版源码 ZIP 上传到仓库根目录，并保留文件名。"
+            ls -la
+            exit 1
+          fi
+          echo "Extracting: $ZIP_FILE"
+          unzip -o "$ZIP_FILE" -d .
+          if [ ! -f "settings.gradle" ] || [ ! -d "app" ]; then
+            echo "::error::ZIP 解压后没有在仓库根目录找到 settings.gradle 和 app/。请检查 ZIP 内部目录结构。"
+            find . -maxdepth 3 -type f | sort | head -200
+            exit 1
+          fi
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+
+      - name: Install Android SDK platform and build tools
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEEPSEEK-UNPACKER-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
