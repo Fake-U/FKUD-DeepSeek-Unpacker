@@ -24,8 +24,8 @@ jobs:
         run: |
           set -euo pipefail
           ZIP_FILE=""
-          if [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_with_icon_and_bars.zip" ]; then
-            ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_with_icon_and_bars.zip"
+          if [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_token_glass_fixed.zip" ]; then
+            ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_token_glass_fixed.zip"
           elif [ -f "DEEPSEEK_UNPACKER_Android_GitHub_Source_fixed.zip" ]; then
             ZIP_FILE="DEEPSEEK_UNPACKER_Android_GitHub_Source_fixed.zip"
           else
